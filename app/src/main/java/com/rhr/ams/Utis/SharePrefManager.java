@@ -9,6 +9,7 @@ public class SharePrefManager {
     private static final String SHAREPREF_NAME = "mysharepref12";
     private static final String KEY_NAME = "name";
     private static final String KEY_EMAIL = "email";
+    private static final String KEY_DEPARTMENT = "department";
     private SharePrefManager(Context context) {
         ctx = context;
     }
@@ -20,11 +21,12 @@ public class SharePrefManager {
         return instance;
     }
 
-    public boolean userLogin(String username,String email){
+    public boolean userLogin(String username,String email,String department){
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHAREPREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_EMAIL,email);
         editor.putString(KEY_NAME,username);
+        editor.putString(KEY_DEPARTMENT,department);
         editor.apply();
         return true;
     }
@@ -49,6 +51,10 @@ public class SharePrefManager {
     public String getEmail(){
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHAREPREF_NAME,Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_EMAIL,null);
+    }
+    public String getDepartment(){
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHAREPREF_NAME,Context.MODE_PRIVATE);
+        return sharedPreferences.getString(KEY_DEPARTMENT,null);
     }
 
 }

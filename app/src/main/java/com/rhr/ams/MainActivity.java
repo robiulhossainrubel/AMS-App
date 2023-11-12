@@ -9,10 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -29,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     TextView title, Section;
     ImageView back, save;
     private ProgressDialog pd;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             finish();
             startActivity(new Intent(this, LogActivity.class));
         }
+        email = SharePrefManager.getInstance(this).getEmail();
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         recyclerView = findViewById(R.id.recyclerview);
@@ -135,7 +141,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(),error.getMessage(), Toast.LENGTH_LONG).show();
             }
-        });
+        }){
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("email",email);
+                return params;
+            }
+        };
         RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
     }
 }

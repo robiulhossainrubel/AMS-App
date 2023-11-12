@@ -67,7 +67,7 @@ public class LogActivity extends AppCompatActivity {
                 try {
                     JSONObject object = new JSONObject(response);
                     if (!object.getBoolean("error")){
-                        SharePrefManager.getInstance(getApplicationContext()).userLogin(object.getString("name"),object.getString("email"));
+                        SharePrefManager.getInstance(getApplicationContext()).userLogin(object.getString("name"),object.getString("email"),object.getString("department"));
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
                     }else {
