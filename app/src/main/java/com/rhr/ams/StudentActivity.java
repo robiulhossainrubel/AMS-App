@@ -24,6 +24,7 @@ import com.rhr.ams.Utis.RequestHandler;
 import com.rhr.ams.Adapter.StudentAdapter;
 import com.rhr.ams.Utis.Constants;
 import com.rhr.ams.Model.StudentItems;
+import com.rhr.ams.Utis.SharePrefManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,7 +47,7 @@ public class StudentActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     public  long cid;
     ImageView back,save;
-    String tbl_name;
+    String tbl_name,email,department;
     private ProgressDialog pd;
 
     @Override
@@ -75,7 +76,11 @@ public class StudentActivity extends AppCompatActivity {
         intent_coursecode = intent.getStringExtra("coursecode");
         cid=intent.getIntExtra("cid",-1);
         position = intent.getIntExtra("position", -1);
-        tbl_name = intent_coursecode+intent_session;
+
+        email = SharePrefManager.getInstance(this).getEmail();
+        department = SharePrefManager.getInstance(this).getDepartment();
+
+        tbl_name = department+intent_coursecode+intent_session+email;
 
         loadStudent(tbl_name);
 

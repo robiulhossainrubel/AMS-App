@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     TextView title, Section;
     ImageView back, save;
     private ProgressDialog pd;
-    String email;
+    String email,department;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             startActivity(new Intent(this, LogActivity.class));
         }
         email = SharePrefManager.getInstance(this).getEmail();
+        department = SharePrefManager.getInstance(this).getDepartment();
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         recyclerView = findViewById(R.id.recyclerview);
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         pd = new ProgressDialog(this);
         //toolbar set
         title.setText("Pabna University of Science and Technology");
-        Section.setText("Attendance Management");
+        Section.setText("Attendance Management System");
         back.setVisibility(View.INVISIBLE);
         save.setOnClickListener(v -> {
             SharePrefManager.getInstance(this).logout();
