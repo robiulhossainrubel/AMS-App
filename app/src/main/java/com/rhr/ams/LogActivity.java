@@ -50,17 +50,17 @@ public class LogActivity extends AppCompatActivity {
         pd.setMessage("Plese wait...");
 
         login.setOnClickListener(v -> {
-            userLogin();
+            teacherLogin();
         });
 
     }
-    private void userLogin(){
+    private void teacherLogin(){
         final String username = email.getText().toString().trim();
         final String password = pass.getText().toString().trim();
 
         pd.show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_LOGIN, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_teacherLOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pd.dismiss();
