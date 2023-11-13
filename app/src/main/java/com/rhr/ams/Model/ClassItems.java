@@ -2,11 +2,13 @@ package com.rhr.ams.Model;
 
 public class ClassItems {
     int id;
+    String session, cc, ct;
 
-    public ClassItems(int id, String name, String section) {
+    public ClassItems(int id, String session, String cc, String ct) {
         this.id = id;
-        Name = name;
-        Section = section;
+        this.session = session;
+        this.cc = cc;
+        this.ct = ct;
     }
 
     public int getId() {
@@ -17,23 +19,28 @@ public class ClassItems {
         this.id = id;
     }
 
-    String Name,Section;
-
-
-
-    public String getName() {
-        return Name;
+    public String getSession() {
+        return session;
     }
 
-    public void setName(String name) {
-        Name = name;
+    public void setSession(String session) {
+        this.session = session;
     }
 
-    public String getSection() {
-        return Section;
+    public String getCc() {
+        return cc;
     }
 
-    public void setSection(String section) {
-        Section = section;
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getCt() {
+        return ct;
+    }
+
+    public void setCt(String ct) {
+        this.ct = ct;
     }
 }
+

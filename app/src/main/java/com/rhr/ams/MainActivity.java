@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
     private void gotoItem(int position) {
         Intent i = new Intent(this, StudentActivity.class);
-        i.putExtra("session", classItems.get(position).getName());
-        i.putExtra("coursecode", classItems.get(position).getSection());
+        i.putExtra("session", classItems.get(position).getSession());
+        i.putExtra("coursecode", classItems.get(position).getCc());
         i.putExtra("position", position);
         i.putExtra("cid", classItems.get(position).getId());
         startActivity(i);
@@ -132,8 +132,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                             int id =Integer.parseInt(in);
                             String session = object.getString("session");
                             String coursecode = object.getString("coursecode");
+                            String ct = object.getString("ct");
 
-                            classItems.add(new ClassItems(id, session, coursecode));
+                            classItems.add(new ClassItems(id, session, coursecode,ct));
                             classAdapter.notifyDataSetChanged();
                         }
                     }else {

@@ -37,10 +37,11 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
     }
 
     public static class ClassViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
-        TextView name,section;
+        TextView name,section,ct;
         public ClassViewHolder(@NonNull View itemView,OnItemClickListener onItemClickListener) {
             super(itemView);
             name=itemView.findViewById(R.id.class_edt);
+            ct = itemView.findViewById(R.id.t_edt);
             section=itemView.findViewById(R.id.section_edt);
             itemView.setOnClickListener(v->onItemClickListener.OnClick(getAdapterPosition()));
             itemView.setOnCreateContextMenuListener(this);
@@ -62,8 +63,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.ClassViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ClassViewHolder holder, int position) {
-        holder.name.setText(classItems.get(position).getName());
-        holder.section.setText(classItems.get(position).getSection());
+        holder.name.setText(classItems.get(position).getSession());
+        holder.ct.setText(classItems.get(position).getCt());
+        holder.section.setText(classItems.get(position).getCc());
     }
 
     @Override

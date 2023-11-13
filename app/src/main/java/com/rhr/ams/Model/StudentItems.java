@@ -4,19 +4,18 @@ public class StudentItems {
     private String roll,name,status;
     long sid;
 
+    public StudentItems(long sid, String roll, String name) {
+        this.sid=sid;
+        this.roll = roll;
+        this.name = name;
+        status="A";
+    }
     public long getSid() {
         return sid;
     }
 
     public void setSid(long sid) {
         this.sid = sid;
-    }
-
-    public StudentItems(long sid, String roll, String name) {
-        this.sid=sid;
-        this.roll = roll;
-        this.name = name;
-        status="A";
     }
 
     public String getRoll() {

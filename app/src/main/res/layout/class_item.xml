@@ -20,13 +20,18 @@
             android:layout_height="wrap_content"
             android:text="Year"
             android:textSize="40sp" />
-
+        <TextView
+            android:id="@+id/t_edt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Year"
+            android:textSize="20sp" />
         <TextView
             android:id="@+id/section_edt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Semester"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
