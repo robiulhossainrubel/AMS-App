@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ClassAdapter classAdapter;
     ArrayList<ClassItems> classItems = new ArrayList<>();
     RecyclerView.LayoutManager layoutManager;
-    TextView title, Section;
+    TextView title, Section,empty_notes_view;
     ImageView back, save;
     private ProgressDialog pd;
     String email,department;
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         email = SharePrefManager.getInstance(this).getEmail();
         department = SharePrefManager.getInstance(this).getDepartment();
 
+        empty_notes_view = findViewById(R.id.empty_notes_view);
         floatingActionButton = findViewById(R.id.floatingActionButton);
         recyclerView = findViewById(R.id.recyclerview);
         title = findViewById(R.id.title_tool);
@@ -82,6 +83,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         recyclerView.setAdapter(classAdapter);
         loadClass();
+        if (classItems.size() >0){
+            empty_notes_view.setVisibility(View.GONE);
+        }else {
+            empty_notes_view.setVisibility(View.VISIBLE);
+        }
         //floatingActionButton.setOnClickListener(view -> fab());
         classAdapter.setOnItemClickListener(this::gotoItem);
 
