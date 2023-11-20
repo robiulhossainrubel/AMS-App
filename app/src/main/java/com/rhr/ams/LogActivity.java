@@ -1,8 +1,5 @@
 package com.rhr.ams;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +7,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.rhr.ams.Utis.Constants;
 import com.rhr.ams.Utis.RequestHandler;
@@ -49,9 +46,7 @@ public class LogActivity extends AppCompatActivity {
         pd = new ProgressDialog(this);
         pd.setMessage("Plese wait...");
 
-        login.setOnClickListener(v -> {
-            teacherLogin();
-        });
+        login.setOnClickListener(v -> teacherLogin());
 
     }
     private void teacherLogin(){
@@ -60,33 +55,26 @@ public class LogActivity extends AppCompatActivity {
 
         pd.show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_teacherLOGIN, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pd.dismiss();
-                try {
-                    JSONObject object = new JSONObject(response);
-                    if (!object.getBoolean("error")){
-                        SharePrefManager.getInstance(getApplicationContext()).userLogin(object.getString("name"),object.getString("email"),object.getString("department"));
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                        finish();
-                    }else {
-                        Toast.makeText(getApplicationContext(),object.getString("message"),Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_teacherLOGIN, response -> {
+            pd.dismiss();
+            try {
+                JSONObject object = new JSONObject(response);
+                if (!object.getBoolean("error")){
+                    SharePrefManager.getInstance(getApplicationContext()).userLogin(object.getString("name"),object.getString("email"),object.getString("department"));
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+                }else {
+                    Toast.makeText(getApplicationContext(),object.getString("message"),Toast.LENGTH_LONG).show();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pd.dismiss();
-                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
-            }
+        }, error -> {
+            pd.dismiss();
+            Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
         }){
-            @Nullable
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String,String> params = new HashMap<>();
                 params.put("email",username);
                 params.put("password",password);

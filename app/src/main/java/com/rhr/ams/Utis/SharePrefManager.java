@@ -32,10 +32,7 @@ public class SharePrefManager {
     }
     public boolean isLoggedIn(){
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHAREPREF_NAME,Context.MODE_PRIVATE);
-        if (sharedPreferences.getString(KEY_NAME,null) !=null){
-            return true;
-        }
-        return false;
+        return sharedPreferences.getString(KEY_NAME, null) != null;
     }
     public boolean logout(){
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHAREPREF_NAME,Context.MODE_PRIVATE);

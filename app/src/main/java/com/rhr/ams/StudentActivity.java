@@ -7,23 +7,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.rhr.ams.Adapter.StudentAdapter;
+import com.rhr.ams.Model.StudentItems;
+import com.rhr.ams.Utis.Constants;
 import com.rhr.ams.Utis.MyCalendar;
 import com.rhr.ams.Utis.RequestHandler;
-import com.rhr.ams.Adapter.StudentAdapter;
-import com.rhr.ams.Utis.Constants;
-import com.rhr.ams.Model.StudentItems;
 import com.rhr.ams.Utis.SharePrefManager;
 
 import org.json.JSONArray;
@@ -42,7 +39,7 @@ public class StudentActivity extends AppCompatActivity {
     int position;
     StudentAdapter studentAdapter;
     ArrayList<StudentItems> studentItems=new ArrayList<>();
-    FloatingActionButton floatingActionButton,fab_date,fab_sheet;
+    FloatingActionButton fab_date;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     public  long cid;
@@ -71,7 +68,6 @@ public class StudentActivity extends AppCompatActivity {
         //other
         Intent intent = new Intent();
         intent=getIntent();
-        //dialoge_title=findViewById(R.id.title_of_classdialogedt);
         intent_session = intent.getStringExtra("session");
         intent_coursecode = intent.getStringExtra("coursecode");
         cid=intent.getIntExtra("cid",-1);
@@ -91,9 +87,7 @@ public class StudentActivity extends AppCompatActivity {
 
         back.setOnClickListener(v->onBackPressed());
         save.setOnClickListener(v->saveStatus(tbl_name));
-        floatingActionButton=findViewById(R.id.fab_student);
         fab_date=findViewById(R.id.fab_date);
-        fab_sheet=findViewById(R.id.fab_sheet);
 
         fab_date.setOnClickListener(v->showDateDialog());
         studentAdapter.setOnItemClickListener(this::makechange);
@@ -102,26 +96,18 @@ public class StudentActivity extends AppCompatActivity {
     private void saveStatus(String table) {
         pd.setMessage("Loading Students.....");
         pd.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_saveAttendanceData, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pd.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_saveAttendanceData, response -> {
+            pd.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
+        }, error -> Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show()){
+            @NonNull
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        }){
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String,String> params = new HashMap<>();
                 String data = new Gson().toJson(studentItems);
                 System.out.println(data);
@@ -144,8 +130,6 @@ public class StudentActivity extends AppCompatActivity {
         String bt=myCalendar.getData();
         myCalendar.SetData(year, month, day);
         myCalendar.SetData(year, month, day);
-
-        //loadStatus();
     }
     public void makechange(int position) {
         String status=studentItems.get(position).getStatus();
@@ -160,40 +144,32 @@ public class StudentActivity extends AppCompatActivity {
     private void loadStudent(String table){
         pd.setMessage("Loading.....");
         pd.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_loadStudentInfo, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                studentItems.clear();
-                pd.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    boolean error = jsonObject.getBoolean("error");
-                    JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    if (!error){
-                        for (int i = 0;i < jsonArray.length();i++){
-                            JSONObject object = jsonArray.getJSONObject(i);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_loadStudentInfo, response -> {
+            studentItems.clear();
+            pd.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                boolean error = jsonObject.getBoolean("error");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                if (!error){
+                    for (int i = 0;i < jsonArray.length();i++){
+                        JSONObject object = jsonArray.getJSONObject(i);
 
-                            String in = object.getString("id");
-                            int id =Integer.parseInt(in);
-                            String roll = object.getString("Roll");
-                            String name = object.getString("Name");
-                            studentItems.add(new StudentItems(id,roll,name));
-                            studentAdapter.notifyDataSetChanged();
-                        }
+                        String in = object.getString("id");
+                        int id =Integer.parseInt(in);
+                        String roll = object.getString("Roll");
+                        String name = object.getString("Name");
+                        studentItems.add(new StudentItems(id,roll,name));
+                        studentAdapter.notifyDataSetChanged();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
+        }, error -> Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show()){
+            @NonNull
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        }){
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String,String> params = new HashMap<>();
                 params.put("tblname",table);
                 return params;

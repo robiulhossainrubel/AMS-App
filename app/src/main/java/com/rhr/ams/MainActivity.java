@@ -1,5 +1,6 @@
 package com.rhr.ams;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,21 +10,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.rhr.ams.Adapter.ClassAdapter;
-import com.rhr.ams.Utis.RequestHandler;
 import com.rhr.ams.Model.ClassItems;
 import com.rhr.ams.Utis.Constants;
+import com.rhr.ams.Utis.RequestHandler;
 import com.rhr.ams.Utis.SharePrefManager;
 
 import org.json.JSONArray;
@@ -36,13 +32,12 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    FloatingActionButton floatingActionButton;
     RecyclerView recyclerView;
     ClassAdapter classAdapter;
     ArrayList<ClassItems> classItems = new ArrayList<>();
     RecyclerView.LayoutManager layoutManager;
     TextView title, Section,empty_notes_view;
-    ImageView back, save;
+    ImageView back, logout;
     private ProgressDialog pd;
     String email,department;
 
@@ -59,21 +54,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         department = SharePrefManager.getInstance(this).getDepartment();
 
         empty_notes_view = findViewById(R.id.empty_notes_view);
-        floatingActionButton = findViewById(R.id.floatingActionButton);
         recyclerView = findViewById(R.id.recyclerview);
         title = findViewById(R.id.title_tool);
         Section = findViewById(R.id.section_tool);
         back = findViewById(R.id.back);
-        save = findViewById(R.id.save);
+        logout = findViewById(R.id.logout);
         pd = new ProgressDialog(this);
         //toolbar set
         title.setText("Pabna University of Science and Technology");
         Section.setText("Attendance Management System");
         back.setVisibility(View.INVISIBLE);
-        save.setOnClickListener(v -> {
-            SharePrefManager.getInstance(this).logout();
-            finish();
-            startActivity(new Intent(this, LogActivity.class));
+        logout.setOnClickListener(v -> {
+
+            AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+
+            builder.setMessage("Do You Want To LogOut?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", (dialog, which) -> {
+
+                        SharePrefManager.getInstance(this).logout();
+                        Intent intent = new Intent(MainActivity.this, LogActivity.class);
+                        startActivity(intent);
+                        finish();
+                    })
+
+                    .setNegativeButton("No", (dialog, which) -> dialog.cancel());
+
+            AlertDialog alertDialog=builder.create();
+            alertDialog.show();
         });
         //RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -114,45 +122,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void loadClass(){
         pd.setMessage("Loading Classes.....");
         pd.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_loadClassInfo, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                classItems.clear();
-                pd.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    boolean error = jsonObject.getBoolean("error");
-                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_loadClassInfo, response -> {
+            classItems.clear();
+            pd.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                boolean error = jsonObject.getBoolean("error");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
 
-                    if (!error){
-                        for (int i = 0;i<jsonArray.length();i++){
-                            JSONObject object = jsonArray.getJSONObject(i);
+                if (!error){
+                    for (int i = 0;i<jsonArray.length();i++){
+                        JSONObject object = jsonArray.getJSONObject(i);
 
-                            String in = object.getString("id");
-                            int id =Integer.parseInt(in);
-                            String session = object.getString("session");
-                            String coursecode = object.getString("coursecode");
-                            String ct = object.getString("ct");
+                        String in = object.getString("id");
+                        int id =Integer.parseInt(in);
+                        String session = object.getString("session");
+                        String coursecode = object.getString("coursecode");
+                        String ct = object.getString("ct");
 
-                            classItems.add(new ClassItems(id, session, coursecode,ct));
-                            classAdapter.notifyDataSetChanged();
-                        }
-                    }else {
-                        Toast.makeText(getApplicationContext(),"Problem", Toast.LENGTH_LONG).show();
+                        classItems.add(new ClassItems(id, session, coursecode,ct));
+                        classAdapter.notifyDataSetChanged();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }else {
+                    Toast.makeText(getApplicationContext(),"Problem", Toast.LENGTH_LONG).show();
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
+        }, error -> Toast.makeText(getApplicationContext(),error.getMessage(), Toast.LENGTH_LONG).show()){
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        }){
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 Map<String,String> params = new HashMap<>();
                 params.put("email",email);
                 return params;
